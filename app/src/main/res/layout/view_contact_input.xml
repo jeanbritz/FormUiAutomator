@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="15dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Input Label"
+        android:id="@+id/tv_input_label"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/black"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_input_text"
+        android:layout_below="@+id/tv_input_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:textColor="@android:color/black"
+
+        android:textCursorDrawable="@null"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget"
+        android:typeface="normal"
+        android:inputType="phone"
+        android:lines="1"
+        android:maxLines="1"
+        android:minLines="1"
+        android:singleLine="true"
+        android:layout_toLeftOf="@+id/btn_choose_contact"
+        android:layout_toStartOf="@+id/btn_choose_contact"
+        android:hint="270"/>
+    <!-- android:textCursorDrawable="@null" === Resets the cursor's colour to black -->
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="Choose Contact"
+        android:id="@+id/btn_choose_contact"
+        android:layout_alignBottom="@+id/et_input_text"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_contacts"/>
+
+
+</RelativeLayout>
