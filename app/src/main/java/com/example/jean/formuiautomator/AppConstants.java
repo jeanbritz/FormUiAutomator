@@ -23,7 +23,10 @@ public class AppConstants {
 
 
     /**
-     *  Test data
+     * Test data
      */
-    public static final String TEST_FORM_DATA_JSON = "[{\"FIRST_NAME\":{\"First Name\":\"string\"}},{\"BIRTHDAY\":{\"Birthday\":\"date\"}},{\"MOBILE_NUMBER\":{\"Mobile Number\":\"contact\"}}]";
+    public static final String TEST_FORM_DATA_JSON = "[{\"FIRST_NAME\":{\"First Name\":\"string\"}}," +
+            "{\"BIRTHDAY\":{\"Birthday\":\"date\"}}," +
+            "{\"MOBILE_NUMBER\":{\"Mobile Number\":\"contact\"}}," +
+            "{\"AGREE_TC\": {\"Do you agree with the T&C?\":\"boolean\"}}]";
 }

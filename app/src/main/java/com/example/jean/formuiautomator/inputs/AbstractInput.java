@@ -69,9 +69,7 @@ public abstract class AbstractInput extends RelativeLayout {
      * @return The input mask's input object reference. This function is typically called
      * when extracting the data from all types of input masks
      */
-    public View getInput() {
-        return this.input;
-    }
+    public abstract View getInput();
 
     /**
      * @param inputView
@@ -80,12 +78,7 @@ public abstract class AbstractInput extends RelativeLayout {
         this.input = inputView;
     }
 
-    /**
-     * @param inputText
-     */
-    public void setInputText(String inputText) {
-
-    }
+    public abstract String getInputText();
 
     /**
      * Validation check
@@ -96,10 +89,10 @@ public abstract class AbstractInput extends RelativeLayout {
      * @return true - if input value passes all validation tests; false - if input value fails one
      * of the validation tests
      */
-    public abstract boolean validate();
+    public abstract boolean hasValidInput();
 
     /**
      * Sanitising filter
      */
-    public abstract void sanitize();
+    public abstract String sanitize(String s);
 }

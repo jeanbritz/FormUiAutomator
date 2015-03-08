@@ -1,24 +1,24 @@
 package com.example.jean.formuiautomator;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import com.example.jean.formuiautomator.inputs.AbstractInput;
 import com.example.jean.formuiautomator.inputs.BooleanInput;
+import com.example.jean.formuiautomator.inputs.ButtonInput;
 import com.example.jean.formuiautomator.inputs.ContactInput;
 import com.example.jean.formuiautomator.inputs.DateInput;
 import com.example.jean.formuiautomator.inputs.TextInput;
@@ -41,32 +41,30 @@ import java.util.List;
  */
 public class DetailFragment extends Fragment {
 
+    private static final String ARG_ACTION_BAR_TITLE = "formTitle";
+    private static final String ARG_FORM_DATA_JSON = "formJson";
     /**
      *  Debug tag for logging debug output to LogCat
      */
     private final String LOG_TAG = getClass().getSimpleName();
-
-
-    private static final String ARG_ACTION_BAR_TITLE = "formTitle";
-    private static final String ARG_FORM_DATA_JSON = "formJson";
-
-    private String mActionBarTitle;
-    private String mFormDataJson;
-
-    private DetailFragmentListener mCallback;
-
     private final int PICK_CONTACT_REQUEST = 100;
-
     String returnVars[];
     int validationErrors = 0;
-
+    private String mActionBarTitle;
+    private String mFormDataJson;
+    private DetailFragmentListener mCallback;
     private View auxView;
-    List<RelativeLayout> customInputView = new ArrayList<RelativeLayout>();
+    private List<AbstractInput> inputArrayList;
+
+    public DetailFragment() {
+        inputArrayList = new ArrayList<AbstractInput>();
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param mTitle Title set in ActionBar.
+     * @param mTitle        Title set in ActionBar.
      * @param mFormDataJson JSON-formatted data used to generated the form with.
      * @return A new instance of fragment DetailFragment.
      */
@@ -80,10 +78,6 @@ public class DetailFragment extends Fragment {
         return fragment;
     }
 
-    public DetailFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +85,7 @@ public class DetailFragment extends Fragment {
             mActionBarTitle = getArguments().getString(ARG_ACTION_BAR_TITLE);
             mFormDataJson = getArguments().getString(ARG_FORM_DATA_JSON);
         }
+        getActivity().setTitle(mActionBarTitle);
     }
 
     @Override
@@ -117,19 +112,15 @@ public class DetailFragment extends Fragment {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-        TextInput textInput;
-        ContactInput contactInput;
-        BooleanInput booleanInput;
-        DateInput dateInput;
+        // Reference object used when instantiating a new input object
+        AbstractInput newInput = null;
 
         try {
             inputsJsonArray = new JSONArray(mFormDataJson);
+            returnVars = new String[inputsJsonArray.length()];
         }
         catch (JSONException e) {
             e.printStackTrace();
-        }
-        try {
-            returnVars = new String[inputsJsonArray.length()];
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -151,56 +142,72 @@ public class DetailFragment extends Fragment {
                 Log.e(LOG_TAG, "JSONException: "+ e.getMessage());
             }
 
-
-
                 if (inputMaskType.equalsIgnoreCase(AppConstants._BOOLEAN_INPUT)) {
-                    booleanInput = new BooleanInput(context, inputLabelText);
+                    newInput = new BooleanInput(context, inputLabelText);
 
-                    linearLayout.addView(booleanInput, params);
-                    customInputView.add(booleanInput);
                 } else if (inputMaskType.equalsIgnoreCase(AppConstants._CONTACT_INPUT)) {
-                    contactInput = new ContactInput(context, inputLabelText);
-                    contactInput.setOnClickListener(new ContactInput.ContactInputListener() {
+                    newInput = new ContactInput(context, inputLabelText);
+                    ((ContactInput) newInput).setOnClickListener(new ContactInput
+                            .ContactInputListener() {
                         @Override
                         public void onChooseContact(View view) {
                             auxView = view;
                             Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
                                     Uri.parse("content://contacts"));
-                            pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+                            pickContactIntent.setType(ContactsContract.CommonDataKinds
+                                    .Phone.CONTENT_TYPE);
                             startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
                         }
                     });
-                    linearLayout.addView(contactInput, params);
-                    customInputView.add(contactInput);
+
                 } else if (inputMaskType.equalsIgnoreCase(AppConstants._DATE_INPUT)) {
-                    dateInput = new DateInput(context, inputLabelText);
-                    dateInput.setOnClickListener(new DateInput.DateInputListener() {
+                    newInput = new DateInput(context, inputLabelText);
+                    ((DateInput) newInput).setOnClickListener(new DateInput.DateInputListener() {
                         @Override
                         public void onChooseDate(View view) {
                             auxView = view;
 
                         }
                     });
-                    linearLayout.addView(dateInput, params);
-                    customInputView.add(dateInput);
+
                 } else if (inputMaskType.equalsIgnoreCase(AppConstants._PASSWORD_INPUT)) {
-                    textInput = new TextInput(context, inputLabelText,
+                    newInput = new TextInput(context, inputLabelText,
                             AppConstants._PASSWORD_INPUT);
-                    linearLayout.addView(textInput, params);
-                    customInputView.add(textInput);
+
                 } else if (inputMaskType.equalsIgnoreCase(AppConstants._NUMBER_INPUT)) {
-                    textInput = new TextInput(context, inputLabelText, AppConstants._NUMBER_INPUT);
-                    linearLayout.addView(textInput, params);
-                    customInputView.add(textInput);
+                    newInput = new TextInput(context, inputLabelText, AppConstants._NUMBER_INPUT);
+
                 } else {
-                    textInput = new TextInput(context, inputLabelText);
-                    linearLayout.addView(textInput, params);
-                    customInputView.add(textInput);
+                    newInput = new TextInput(context, inputLabelText);
                 }
-                Log.d(LOG_TAG, "Adding " + inputMaskType + " input labeled : [ " + inputLabelText + " ]");
+            linearLayout.addView(newInput, params);
+            inputArrayList.add(newInput);
+            Log.d(LOG_TAG, "Adding " + inputMaskType + " input labeled : [ "
+                    + inputLabelText + " ]");
 
         }
+        newInput = new ButtonInput(context, "Submit", "submit");
+        newInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String output = extractInputData().toString();
+                if (validationErrors > 0) {
+                    InfoDialog.newInstance("Attention", "Validation errors occurred in the form. " +
+                            "Please check and try submitting them again.").show(getFragmentManager(),
+                            "Attention");
+                    validationErrors = 0;
+                } else {
+                    InfoDialog.newInstance("Submitted", output).show(getFragmentManager(),
+                            "Submitted");
+                }
+                Log.i(LOG_TAG, output);
 
+            }
+        });
+        linearLayout.addView(newInput);
+
+        // ScrollView adds scroll bars to the linear layout if all the views does not fit on the
+        // screen.
         ScrollView scrollView = new ScrollView(context);
         scrollView.addView(linearLayout);
         container.addView(scrollView);
@@ -216,7 +223,7 @@ public class DetailFragment extends Fragment {
             mCallback = (DetailFragmentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement onDetailFragmentInteraction");
         }
     }
 
@@ -248,12 +255,11 @@ public class DetailFragment extends Fragment {
                             null, null, null);
                     cursor.moveToFirst();
 
-                    // Retrieve that matched data
-                    String displayName = cursor.getString(cursor.getColumnIndex(projection[0]));
+                    // Retrieve the matched data
                     String msisdn = cursor.getString(cursor.getColumnIndex(projection[1]));
                     ContactInput contactInput = (ContactInput)auxView;
                     contactInput.setInputText(msisdn);
-                    contactInput.sanitize();
+
                 }
                 break;
 
@@ -261,47 +267,28 @@ public class DetailFragment extends Fragment {
 
     }
 
-    public JSONObject retrieveInputData () {
-        Log.v(LOG_TAG, "retrieveInputData() called");
-        JSONArray inputJsonArray = null;
-        JSONObject temp = null;
-        String val = "";
-        EditText editText = null;
+    public JSONObject extractInputData() {
+        Log.v(LOG_TAG, "extractInputData() called");
+        JSONArray outputJsonArray = null;
+        JSONObject jsonObject = null;
+        String extractedText = "";
 
         try {
-            inputJsonArray = new JSONArray();
-            for (int i = 0; i < customInputView.size(); i++) {
+            outputJsonArray = new JSONArray();
+            for (int i = 0; i < inputArrayList.size(); i++) {
 
-                if(customInputView.get(i)  instanceof TextInput) {
-                    TextInput tempInput = (TextInput)customInputView.get(i);
-                    editText = tempInput.getInput();
-                    if(!tempInput.hasValidInput()) {
-                        validationErrors++;
+                AbstractInput input = inputArrayList.get(i);
+                extractedText = input.sanitize(input.getInputText());
+                if (!input.hasValidInput()) {
+                    if (validationErrors == 0) {
+                        input.requestFocus();
                     }
+                    validationErrors++;
                 }
-                else if(customInputView.get(i) instanceof ContactInput) {
-                    ContactInput tempInput = (ContactInput)customInputView.get(i);
-                    if(!tempInput.hasValidInput()) {
-                        validationErrors++;
-                    }
-                    editText = tempInput.getInput();
-                }
-                else if(customInputView.get(i) instanceof  BooleanInput) {
-                    BooleanInput tempInput = ((BooleanInput)customInputView.get(i));
-                    editText = new EditText(getActivity());
-                    editText.setText(tempInput.getInput()+"");
-                }
-                else if(customInputView.get(i) instanceof  DateInput) {
-                    DateInput tempInput = (DateInput)customInputView.get(i);
-                    editText = tempInput.getInput();
-                }
-
-
-                temp = new JSONObject().accumulate(returnVars[i], editText.getText().toString());
-                inputJsonArray.put(temp);
-
+                jsonObject = new JSONObject().accumulate(returnVars[i], extractedText);
+                outputJsonArray.put(jsonObject);
             }
-            return new JSONObject().accumulate("output", inputJsonArray);
+            return new JSONObject().accumulate("output", outputJsonArray);
         }
         catch (JSONException e) {
             Log.e(LOG_TAG, "JSONException: " + e.getMessage());
@@ -310,16 +297,7 @@ public class DetailFragment extends Fragment {
         return null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface DetailFragmentListener {
         //
         public void onDetailFragmentInteraction(JSONObject formData);

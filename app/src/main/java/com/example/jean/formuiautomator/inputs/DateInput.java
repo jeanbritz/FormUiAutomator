@@ -2,6 +2,7 @@ package com.example.jean.formuiautomator.inputs;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -52,21 +53,21 @@ public class DateInput extends AbstractInput {
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_date_input, this, true);
         label = (TextView) findViewById(R.id.tv_input_label);
-        input = (EditText) findViewById(R.id.et_input_text);
-        btnChooseDate = (ImageButton) findViewById(R.id.btn_choose_date);
-        ((EditText) input).setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
+        input = findViewById(R.id.et_input_text);
+        getInput().setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
         label.setText(labelCaption);
 
+        btnChooseDate = (ImageButton) findViewById(R.id.btn_choose_date);
         dateFormat.setTimeZone(gregorianCalendar.getTimeZone());
 
         btnChooseDate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 preExistingDate = ((EditText) input).getText().toString().trim();
-                Log.i(LOG_TAG, (label.getText() + "User tapped on Date Picker button"));
+                Log.d(LOG_TAG, (label.getText() + "User tapped on Date Picker button"));
 
                 GregorianCalendar dateTemp = null;
-                if(preExistingDate != null && !preExistingDate.equals("")) {
+                if (preExistingDate != null && !preExistingDate.equals("")) {
                     // if the date field has some data in it, try to parse it and display in the
                     // date picker dialog.
 
@@ -76,11 +77,10 @@ public class DateInput extends AbstractInput {
                     initMonth = dateTemp.get(Calendar.MONTH);
                     initYear = dateTemp.get(Calendar.YEAR);
 
-                }
-                else {
+                } else {
                     // if the date field is empty or corrupt, then set the dialog to current date
                     Calendar cal = new GregorianCalendar();
-                    if(dialog == null) {
+                    if (dialog == null) {
                         initYear = cal.get(Calendar.YEAR);
                         initMonth = cal.get(Calendar.MONTH);
                         initDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -90,34 +90,45 @@ public class DateInput extends AbstractInput {
                         initDay);
                 dialog.show();
                 Log.i(LOG_TAG, (label.getText() + "Date picker dialog is present."));
-                if(listener != null) {
+                if (listener != null) {
                     listener.onChooseDate(DateInput.this);
                 }
             }
         });
     }
 
-    public boolean validate() {
-        return true;
-    }
-
     @Override
-    public void sanitize() {
-
+    public String sanitize(String s) {
+        return s.trim();
     }
 
     public EditText getInput() {
-        String temp = ((EditText) input).getText().toString().trim();
-        ((EditText) input).setText(temp);
         return ((EditText) input);
     }
 
+    @Override
+    public boolean hasValidInput() {
+        getInput().setError(null);
+        boolean validDate = true;
+        if (!TextUtils.isEmpty(getInputText())) {
+            try {
+                gregorianCalendar.setTime(dateFormat.parse(getInputText()));
+            } catch (ParseException e) {
+                validDate = false;
+                getInput().setError("Invalid date");
+            }
+            return validDate;
+        }
+        getInput().setError("Field is required");
+        return false;
+    }
+
     public String getInputText() {
-        return ((EditText) input).getText().toString();
+        return getInput().getText().toString();
     }
 
     public void setInputText(String text) {
-        ((EditText) input).setText(text);
+        getInput().setText(text);
     }
 
     public void setOnClickListener(DateInputListener listener) {
@@ -162,7 +173,7 @@ public class DateInput extends AbstractInput {
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            ((EditText) input).setText(parseDateToString(year, monthOfYear, dayOfMonth));
+            setInputText(parseDateToString(year, monthOfYear, dayOfMonth));
             view.updateDate(year, monthOfYear, dayOfMonth);
             dialog.hide();
             Log.i(LOG_TAG, (label.getText() + "Date changed to : [ " + getInputText() + " ]."));

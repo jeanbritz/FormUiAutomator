@@ -6,17 +6,14 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
 import org.json.JSONObject;
 
 
-public class MainActivity extends Activity implements DetailFragment.DetailFragmentListener {
+public class MainActivity extends Activity implements DetailFragment.DetailFragmentListener,
+        InfoDialog.InfoDialogListener {
 
 
     /**
@@ -63,7 +60,7 @@ public class MainActivity extends Activity implements DetailFragment.DetailFragm
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (R.id.action_settings == id) {
             return true;
         }
 
@@ -85,4 +82,8 @@ public class MainActivity extends Activity implements DetailFragment.DetailFragm
 
     }
 
+    @Override
+    public void onInfoDialogOK() {
+
+    }
 }
