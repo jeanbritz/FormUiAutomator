@@ -1,10 +1,29 @@
-Android Example - Generating a form to fill in, which is configured by using a JSON-string
+Android Example - Generating a form, which is configured by using a JSON-formatted string
 ===============
+
+The form also has a simple built-in validation check on each text field.
+
 
 Input:
 ----------
 JSON String which configures the UI layout of the form
-`[{\"FIRST_NAME\":{\"First Name\":\"string\"}},{\"BIRTHDAY\":{\"Birthday\":\"date\"}},{\"MOBILE_NUMBER\":{\"Mobile Number\":\"contact\"}}]`
+`[
+    {
+        "FIRST_NAME": {
+            "FirstName": "string"
+        }
+    },
+    {
+        "BIRTHDAY": {
+            "Birthday": "date"
+        }
+    },
+    {
+        "MOBILE_NUMBER": {
+            "MobileNumber": "contact"
+        }
+    }
+]`
 
 Output:
 ---------
