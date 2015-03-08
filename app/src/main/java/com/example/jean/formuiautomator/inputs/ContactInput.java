@@ -4,24 +4,19 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.jean.formuiautomator.R;
-import com.example.jean.formuiautomator.AppConstants;
 
 /**
  * Created by BritzJ on 10/11/2014.
  */
-public class ContactInput extends RelativeLayout implements TextView.OnEditorActionListener {
+public class ContactInput extends AbstractInput implements TextView.OnEditorActionListener {
 
-    private TextView label;
-    private EditText input;
     private ImageButton btnChooseContact;
     private ContactInputListener listener;
     private boolean validInput = false;
@@ -30,17 +25,16 @@ public class ContactInput extends RelativeLayout implements TextView.OnEditorAct
 
     public ContactInput(Context context) {
         super(context);
-        LayoutInflater inflater = (LayoutInflater) context
-                                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         inflater.inflate(R.layout.view_contact_input, this, true);
         label = (TextView) findViewById(R.id.tv_input_label);
         input = (EditText) findViewById(R.id.et_input_text);
-        input.setOnEditorActionListener(this);
+
         btnChooseContact = (ImageButton) findViewById(R.id.btn_choose_contact);
         btnChooseContact.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(LOG_TAG, (label.getText() + " -> User tapped on Contact Picker button"));
+                Log.i(LOG_TAG, (label.getText() + "User tapped on Contact Picker button"));
                 if (listener != null) {
                     listener.onChooseContact(ContactInput.this);
                 }
@@ -55,15 +49,11 @@ public class ContactInput extends RelativeLayout implements TextView.OnEditorAct
     public ContactInput(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-    // Future usage
-    public ContactInput(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
 
     public EditText getInput() {
-        String temp = this.input.getText().toString().trim();
-        this.input.setText(temp);
-        return this.input;
+        String temp = ((EditText) input).getText().toString().trim();
+        ((EditText) input).setText(temp);
+        return ((EditText) input);
     }
 
     public void sanitize() {
@@ -83,24 +73,17 @@ public class ContactInput extends RelativeLayout implements TextView.OnEditorAct
 
     public boolean hasValidInput() { return this.validInput; }
 
-    public String getInputText() {
-        return this.input.getText().toString();
-    }
-
-    public void setInputText(String text) {
-        this.input.setText(text);
-    }
 
     public boolean validate () {
 
         // basic length check
-        if(getInputText().length() >= 10 && getInputText().length() < 12) {
+        if (getInput().length() >= 10 && getInput().length() < 12) {
             validInput = true;
             return true;
         }
         else {
             Log.w(LOG_TAG, (label.getText() + " -> User entered an invalid number [ "
-                                            + getInputText() + " ]"));
+                    + getInput() + " ]"));
             getInput().setError("Invalid number");
         }
         return false;

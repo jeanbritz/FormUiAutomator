@@ -1,32 +1,33 @@
 package com.example.jean.formuiautomator.inputs;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.jean.formuiautomator.R;
 
-/**
- * Created by britzj on 12/11/2014.
- */
-public class BooleanInput extends RelativeLayout {
 
-    private TextView label;
+/**
+ * Boolean input mask that displays two radio options labeled as Yes and No
+ *
+ * @author britzj
+ * @since 1.0
+ * @version 1.0
+ *
+ */
+public class BooleanInput extends AbstractInput {
+
     private RadioGroup radioGroup;
     private RadioButton radioBtnYes;
     private RadioButton radioBtnNo;
 
     private int checkedOption;
 
-    private String LOG_TAG = getClass().getSimpleName();
 
     public BooleanInput(Context context) {
         super(context);
-        LayoutInflater inflater = (LayoutInflater)
-                                        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         inflater.inflate(R.layout.view_boolean_input, this, true);
 
         label = (TextView) findViewById(R.id.tv_input_label);
@@ -42,7 +43,10 @@ public class BooleanInput extends RelativeLayout {
 
     }
 
-    public String getInput() {
+    /**
+     * @return Either Yes or No
+     */
+    public String getInputText() {
         radioBtnYes = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
         String temp = radioBtnYes.getText().toString();
         if(temp.equalsIgnoreCase("Yes")) {
@@ -51,5 +55,22 @@ public class BooleanInput extends RelativeLayout {
         else {
             return "No";
         }
+    }
+
+    /**
+     * Still needs to be implemented
+     * @return
+     */
+    @Override
+    public boolean validate() {
+        return false;
+    }
+
+    /**
+     * Still needs to be implemented
+     */
+    @Override
+    public void sanitize() {
+
     }
 }

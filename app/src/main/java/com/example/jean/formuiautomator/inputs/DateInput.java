@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +25,8 @@ import java.util.GregorianCalendar;
 /**
  * Created by britzj on 13/11/2014.
  */
-public class DateInput extends RelativeLayout {
+public class DateInput extends AbstractInput {
 
-    private TextView label;
-    private EditText input;
     private ImageButton btnChooseDate;
     private DateInputListener listener;
 
@@ -44,16 +41,20 @@ public class DateInput extends RelativeLayout {
 
     private String LOG_TAG = getClass().getSimpleName();
 
+    /**
+     * @param context
+     * @param labelCaption
+     */
     public DateInput(Context context, String labelCaption) {
         super(context);
         final Context mContext = context;
         LayoutInflater inflater = (LayoutInflater) context.
-                                                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_date_input, this, true);
         label = (TextView) findViewById(R.id.tv_input_label);
         input = (EditText) findViewById(R.id.et_input_text);
         btnChooseDate = (ImageButton) findViewById(R.id.btn_choose_date);
-        input.setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
+        ((EditText) input).setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
         label.setText(labelCaption);
 
         dateFormat.setTimeZone(gregorianCalendar.getTimeZone());
@@ -61,8 +62,8 @@ public class DateInput extends RelativeLayout {
         btnChooseDate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                preExistingDate = input.getText().toString().trim();
-                Log.i(LOG_TAG, (label.getText() + " -> User tapped on Date Picker button"));
+                preExistingDate = ((EditText) input).getText().toString().trim();
+                Log.i(LOG_TAG, (label.getText() + "User tapped on Date Picker button"));
 
                 GregorianCalendar dateTemp = null;
                 if(preExistingDate != null && !preExistingDate.equals("")) {
@@ -86,9 +87,9 @@ public class DateInput extends RelativeLayout {
                     }
                 }
                 dialog = new DatePickerDialog(mContext, new PickDate(), initYear, initMonth,
-                                              initDay);
+                        initDay);
                 dialog.show();
-                Log.i(LOG_TAG, (label.getText() + " -> Date picker dialog is present."));
+                Log.i(LOG_TAG, (label.getText() + "Date picker dialog is present."));
                 if(listener != null) {
                     listener.onChooseDate(DateInput.this);
                 }
@@ -100,39 +101,30 @@ public class DateInput extends RelativeLayout {
         return true;
     }
 
-    public EditText getInput() {
-        String temp = this.input.getText().toString().trim();
-        this.input.setText(temp);
-        return this.input;
+    @Override
+    public void sanitize() {
+
     }
 
-    public String getInputText () { return this.input.getText().toString(); }
+    public EditText getInput() {
+        String temp = ((EditText) input).getText().toString().trim();
+        ((EditText) input).setText(temp);
+        return ((EditText) input);
+    }
+
+    public String getInputText() {
+        return ((EditText) input).getText().toString();
+    }
 
     public void setInputText(String text) {
-        this.input.setText(text);
+        ((EditText) input).setText(text);
     }
 
     public void setOnClickListener(DateInputListener listener) {
         this.listener = listener;
     }
 
-    public interface DateInputListener {
-        public void onChooseDate(View view);
-    }
-
-    private class PickDate implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            input.setText(parseDateToString(year, monthOfYear, dayOfMonth));
-            view.updateDate(year, monthOfYear, dayOfMonth);
-            dialog.hide();
-            Log.i(LOG_TAG, (label.getText() + " -> Date picker dialog is closed."));
-            Log.i(LOG_TAG, (label.getText() + " -> Date changed to : [ " + getInputText() + " ]."));
-        }
-    }
-
-    public String parseDateToString(Calendar date)     {
+    public String parseDateToString(Calendar date) {
         return dateFormat.format(date);
     }
 
@@ -145,10 +137,9 @@ public class DateInput extends RelativeLayout {
 
         try {
             gregorianCalendar.setTime(dateFormat.parse(dateInText));
-        }
-        catch(ParseException e) {
+        } catch (ParseException e) {
             Log.e(LOG_TAG, "ParseException: " + e.getMessage());
-            if(!preExistingDate.equals("")) {
+            if (!preExistingDate.equals("")) {
 
                 Log.i(LOG_TAG, "Invalid date. Reverting to [ "
                         + dateFormat.format(gregorianCalendar.getTime()) + " ].");
@@ -161,5 +152,20 @@ public class DateInput extends RelativeLayout {
 
         }
         return gregorianCalendar;
+    }
+
+    public interface DateInputListener {
+        public void onChooseDate(View view);
+    }
+
+    private class PickDate implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            ((EditText) input).setText(parseDateToString(year, monthOfYear, dayOfMonth));
+            view.updateDate(year, monthOfYear, dayOfMonth);
+            dialog.hide();
+            Log.i(LOG_TAG, (label.getText() + "Date changed to : [ " + getInputText() + " ]."));
+        }
     }
 }
