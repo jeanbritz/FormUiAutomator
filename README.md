@@ -29,3 +29,5 @@ Output:
 ---------
 ![alt text](/screenshots/Empty_Form.png "Empty generated form")
 ![alt text](/screenshots/Form_with_input.png "Generated form with input")
+![alt text](/screenshots/Form_submitted_correct.png "Form submitted with valid input data")
+![alt text](/screenshots/Form_submitted_incorrect.png "Form submitted with incorrect data")
