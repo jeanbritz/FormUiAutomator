@@ -1,6 +1,8 @@
 Android Example - Generating a form, which is configured by using a JSON-formatted string
-The form also has a simple built-in validation check on each text field.
 ===============
+
+The form also has a simple built-in validation check on each text field.
+
 
 Input:
 ----------
