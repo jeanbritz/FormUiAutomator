@@ -27,7 +27,7 @@ JSON String which configures the UI layout of the form
 
 Output:
 ---------
-![alt text](/screenshots/Empty_Form.png "Empty generated form")
-![alt text](/screenshots/Form_with_input.png "Generated form with input")
-![alt text](/screenshots/Form_submitted_correct.png "Form submitted with valid input data")
-![alt text](/screenshots/Form_submitted_incorrect.png "Form submitted with incorrect data")
+![alt text](/Screenshots/Empty_Form.png "Empty generated form")
+![alt text](/Screenshots/Form_with_input.png "Generated form with input")
+![alt text](/Screenshots/Form_submitted_correct.png "Form submitted with valid input data")
+![alt text](/Screenshots/Form_submitted_incorrect.png "Form submitted with incorrect data")
