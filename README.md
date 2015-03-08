@@ -27,5 +27,5 @@ JSON String which configures the UI layout of the form
 
 Output:
 ---------
-![alt text](/blob/master/screenshots/Empty_Form.png  "Empty generated form")
-![alt text](/blob/master/screenshots/Form_with_input.png "Generated form with input")
+![alt text](/screenshots/Empty_Form.png  "Empty generated form" =288x)
+![alt text](/screenshots/Form_with_input.png "Generated form with input")
